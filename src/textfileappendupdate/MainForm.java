@@ -40,6 +40,7 @@ public class MainForm extends javax.swing.JFrame {
         btn_update = new javax.swing.JButton();
         btn_reset = new javax.swing.JButton();
         btn_find = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -79,6 +80,13 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
+        btn_delete.setText("Delete");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -95,13 +103,15 @@ public class MainForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_email))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btn_reset)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_save)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
-                        .addComponent(btn_find)
+                        .addComponent(btn_reset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btn_save, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_find, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -114,8 +124,6 @@ public class MainForm extends javax.swing.JFrame {
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jLabel1, jLabel2, jLabel3, jLabel4});
-
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btn_find, btn_reset, btn_save, btn_update});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -136,12 +144,13 @@ public class MainForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_save)
                     .addComponent(btn_update)
                     .addComponent(btn_reset)
-                    .addComponent(btn_find))
+                    .addComponent(btn_find)
+                    .addComponent(btn_delete))
                 .addContainerGap())
         );
 
@@ -189,6 +198,7 @@ public class MainForm extends javax.swing.JFrame {
         
         btn_save.setEnabled(true);
         btn_update.setEnabled(true);
+        btn_delete.setEnabled(true);
     }//GEN-LAST:event_btn_resetActionPerformed
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
@@ -248,6 +258,7 @@ public class MainForm extends javax.swing.JFrame {
         txt_email.setText("");
         isFound = false;
         btn_update.setEnabled(true);
+        btn_delete.setEnabled(true);
 
         String search_id = txt_id.getText();
 
@@ -281,6 +292,48 @@ public class MainForm extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_btn_findActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        String delete_id = txt_id.getText();
+
+        ArrayList<User> userList = new ArrayList<>();
+
+        if (!isFound) {
+            JOptionPane.showMessageDialog(this, "enter a valid id and search");
+        } else {
+            File file = new File("users.txt");
+
+            try {
+                try (FileReader fr = new FileReader(file)) {
+                    BufferedReader br = new BufferedReader(fr);
+                    String data;
+                    User tempUser;
+
+                    while ((data = br.readLine()) != null) {
+                        tempUser = new User(data);
+                        if (!tempUser.getId().equals(delete_id)) {
+                            userList.add(tempUser);
+                        }                        
+                    }
+                }
+
+                try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+                    userList.forEach((user) -> {
+                        pw.println(user.toString());
+                    });
+                    JOptionPane.showMessageDialog(this, "user deleted");
+                    btn_delete.setEnabled(false);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                }
+
+            } catch (FileNotFoundException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btn_deleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -316,6 +369,7 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_find;
     private javax.swing.JButton btn_reset;
     private javax.swing.JButton btn_save;
